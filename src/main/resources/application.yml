@@ -1,0 +1,29 @@
+server:
+  address: 0.0.0.0
+  port: 8080
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: buciukai_be
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:postgres}?currentSchema=buciukai
+    username: ${POSTGRES_USER:dbuser}
+    password: ${POSTGRES_PASSWORD:pass}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+mybatis:
+  type-handlers-package: com.buciukai_be.config.mybatis
+  configuration:
+    map-underscore-to-camel-case: true
+backend:
+  url: http://localhost:8080/api
+frontend:
+  url: http://localhost:5173
+
