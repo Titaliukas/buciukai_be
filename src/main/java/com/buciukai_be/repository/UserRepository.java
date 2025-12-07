@@ -1,16 +1,16 @@
 package com.buciukai_be.repository;
 
+import com.buciukai_be.api.dto.UserInfoDto;
 import com.buciukai_be.model.User;
-import com.buciukai_be.model.UserRole;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Mapper
 @Repository
@@ -26,9 +26,18 @@ public interface UserRepository {
 
     @Select(
             """
-            SELECT id, firebase_uid, username, name, surname, email, phone_number, birthdate, city, role, created_at
+            SELECT id, firebase_uid, username, name, surname, email, phone_number, birthdate, city, postal_code, role, created_at
             FROM buciukai.users
             WHERE firebase_uid = #{firebaseUid}
             """)
-    Optional<User> findByFirebaseUid(String firebaseUid);
+    Optional<User> getUserByFirebaseUid(String firebaseUid);
+
+    @Update(
+            """
+            UPDATE buciukai.users
+            SET username=#{user.username}, name=#{user.name}, surname=#{user.surname}, email=#{user.email}, phone_number=#{user.phoneNumber}, birthdate=#{user.birthdate}, city=#{user.city}, postal_code=#{user.postalCode}
+            WHERE firebase_uid = #{firebaseUid}
+            """
+    )
+    void updateUser(String firebaseUid, UserInfoDto user);
 }
