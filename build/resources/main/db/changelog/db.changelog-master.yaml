@@ -1,4 +1,0 @@
-databaseChangeLog: []
-#databaseChangeLog:
-#  - includeAll:
-#      path: db/migrations
