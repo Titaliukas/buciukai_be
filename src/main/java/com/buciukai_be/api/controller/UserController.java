@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +55,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+
     @PatchMapping("/profile/edit")
     public ResponseEntity<String> updateUser(HttpServletRequest request, @RequestBody UserInfoDto dto){
         FirebaseToken firebaseUser =
@@ -61,5 +63,14 @@ public class UserController {
         String firebaseUid = firebaseUser.getUid();
 
         return userService.updateUser(firebaseUid, dto);
+    }
+
+    @DeleteMapping("profile/delete")
+    public ResponseEntity<String> deleteUser(HttpServletRequest request){
+        FirebaseToken firebaseUser =
+                (FirebaseToken) request.getAttribute("firebaseUser");
+        String firebaseUid = firebaseUser.getUid();
+
+        return userService.deleteUser(firebaseUid);
     }
 }

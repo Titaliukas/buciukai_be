@@ -22,4 +22,5 @@ public class UserInfoDto {
     private OffsetDateTime birthdate;
     private String city;
     private String postalCode;
+    private UserRole role;
 }

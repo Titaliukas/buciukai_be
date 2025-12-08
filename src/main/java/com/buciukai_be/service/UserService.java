@@ -74,11 +74,17 @@ public class UserService {
                 .city(user.get().getCity())
                 .phoneNumber(user.get().getPhoneNumber())
                 .postalCode(user.get().getPostalCode())
+                .role(user.get().getRole())
                 .build();
     }
 
     public ResponseEntity<String> updateUser(String firebaseUid, UserInfoDto dto) {
         userRepository.updateUser(firebaseUid, dto);
         return ResponseEntity.ok("User updated successfully");
+    }
+
+    public  ResponseEntity<String> deleteUser(String firebaseUid) {
+        userRepository.deleteUser(firebaseUid);
+        return ResponseEntity.ok("User deleted successfully");
     }
 }

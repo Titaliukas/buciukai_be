@@ -2,6 +2,7 @@ package com.buciukai_be.repository;
 
 import com.buciukai_be.api.dto.UserInfoDto;
 import com.buciukai_be.model.User;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -40,4 +41,12 @@ public interface UserRepository {
             """
     )
     void updateUser(String firebaseUid, UserInfoDto user);
+
+    @Delete(
+            """
+            DELETE FROM buciukai.users
+            WHERE firebase_uid = #{firebaseUid}
+            """
+    )
+    void deleteUser(String firebaseUid);
 }
