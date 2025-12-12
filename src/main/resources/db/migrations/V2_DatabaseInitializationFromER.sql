@@ -64,17 +64,15 @@ CREATE TABLE system_setting (
 
 
 CREATE TABLE admin (
-    user_id INT PRIMARY KEY,
-
+    user_id UUID PRIMARY KEY,
     CONSTRAINT fk_admin_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
 );
 
 CREATE TABLE client (
-    user_id INT PRIMARY KEY,
+    user_id UUID PRIMARY KEY,
     total_reservations INT,
-
     CONSTRAINT fk_client_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
@@ -115,42 +113,38 @@ CREATE TABLE search_query (
     max_price NUMERIC(10,2) NOT NULL,
     bed_type_id INT NOT NULL,
     room_type_id INT NOT NULL,
-    user_id INT NOT NULL,
-
+    user_id UUID NOT NULL,
     CONSTRAINT fk_search_query_bed_type
         FOREIGN KEY (bed_type_id)
         REFERENCES bed_type(id),
-    
     CONSTRAINT fk_search_query_room_type
         FOREIGN KEY (room_type_id)
         REFERENCES room_type(id),
-    
     CONSTRAINT fk_search_query_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
 );
 
 CREATE TABLE staff (
-    user_id INT PRIMARY KEY,
+    user_id UUID PRIMARY KEY,
     position VARCHAR(255),
     salary NUMERIC(10,2),
     hotel_id INT NOT NULL,
-
     CONSTRAINT fk_staff_user
         FOREIGN KEY (user_id)
         REFERENCES users(id),
-    
     CONSTRAINT fk_staff_hotel
         FOREIGN KEY (hotel_id)
         REFERENCES hotel(id)
 );
+
 
 CREATE TABLE announcement (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     message VARCHAR(255) NOT NULL,
     visible_until DATE NOT NULL,
-    admin_id INT NOT NULL,
+    admin_id UUID NOT NULL,
 
     CONSTRAINT fk_announcement_admin
         FOREIGN KEY (admin_id)
@@ -175,7 +169,7 @@ CREATE TABLE event (
     date DATE NOT NULL,
     time_start TIME NOT NULL,
     time_end TIME NOT NULL,
-    admin_id INT NOT NULL,
+    admin_id UUID NOT NULL,
 
     CONSTRAINT fk_event_admin
         FOREIGN KEY (admin_id)
@@ -211,7 +205,7 @@ CREATE TABLE report (
     period_end DATE NOT NULL,
     parameters_json JSONB NOT NULL,
     report_type_id INT NOT NULL,
-    admin_id INT NOT NULL,
+    admin_id UUID NOT NULL,
 
     CONSTRAINT fk_report_report_type
         FOREIGN KEY (report_type_id)
@@ -227,7 +221,7 @@ CREATE TABLE reservation (
     check_in DATE NOT NULL,
     check_out DATE NOT NULL,
     status INT NOT NULL,
-    client_id INT NOT NULL,
+    client_id UUID NOT NULL,
     room_id INT NOT NULL,
 
     CONSTRAINT fk_reservation_status
