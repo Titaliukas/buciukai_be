@@ -1,6 +1,5 @@
 DROP TABLE IF EXISTS staff CASCADE;
 DROP TABLE IF EXISTS clients CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
 
 CREATE TABLE bed_type (
     id SERIAL PRIMARY KEY,
@@ -63,17 +62,6 @@ CREATE TABLE system_setting (
     description VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    nickname VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    surname VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    phone_number VARCHAR(255) NOT NULL,
-    birthdate DATE NOT NULL,
-    city VARCHAR(255) NOT NULL,
-    postal_code VARCHAR(255) NOT NULL
-);
 
 CREATE TABLE admin (
     user_id INT PRIMARY KEY,
