@@ -8,7 +8,7 @@ import com.buciukai_be.api.dto.UserSignUpDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import java.util.UUID;
 import java.util.Optional;
 
 @Service
@@ -34,26 +34,25 @@ public class UserService {
                 .Role(UserRole.fromCode(dto.getRole()))
                 .build();
 
-
         // Save user
         userRepository.createUser(user);
 
         // Handle STAFF / CLIENT extra tables
-//        switch (user.getRole()) {
-//            case STAFF -> {
-//                Staff staff = new Staff();
-//                staff.setUser(user);
-//                staff.setPosition("Unknown"); // default
-//                staff.setSalary(BigDecimal.ZERO);
-//                // save via staff repository
-//            }
-//            case CLIENT -> {
-//                Client client = new Client();
-//                client.setUser(user);
-//                client.setTotalReservations(0);
-//                // save via client repository
-//            }
-//        }
+        // switch (user.getRole()) {
+        // case STAFF -> {
+        // Staff staff = new Staff();
+        // staff.setUser(user);
+        // staff.setPosition("Unknown"); // default
+        // staff.setSalary(BigDecimal.ZERO);
+        // // save via staff repository
+        // }
+        // case CLIENT -> {
+        // Client client = new Client();
+        // client.setUser(user);
+        // client.setTotalReservations(0);
+        // // save via client repository
+        // }
+        // }
 
         return user;
     }
@@ -83,8 +82,15 @@ public class UserService {
         return ResponseEntity.ok("User updated successfully");
     }
 
-    public  ResponseEntity<String> deleteUser(String firebaseUid) {
+    public ResponseEntity<String> deleteUser(String firebaseUid) {
         userRepository.deleteUser(firebaseUid);
         return ResponseEntity.ok("User deleted successfully");
     }
+
+    public UUID getUuidByFirebaseUid(String firebaseUid) {
+        return userRepository.getUserByFirebaseUid(firebaseUid)
+                .map(User::getId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
 }

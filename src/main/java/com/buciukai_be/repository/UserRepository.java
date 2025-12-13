@@ -17,36 +17,30 @@ import java.util.Optional;
 @Repository
 public interface UserRepository {
 
-    @Insert(
-            """
-            INSERT INTO buciukai.users (firebase_uid, username, name, surname, email, role)
-            VALUES (#{firebaseUid}, #{username}, #{name}, #{surname}, #{email}, #{role})
-            """)
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void createUser(User user);
+        @Insert("""
+                        INSERT INTO buciukai.users (firebase_uid, username, name, surname, email, role)
+                        VALUES (#{firebaseUid}, #{username}, #{name}, #{surname}, #{email}, #{role})
+                        """)
+        @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+        void createUser(User user);
 
-    @Select(
-            """
-            SELECT id, firebase_uid, username, name, surname, email, phone_number, birthdate, city, postal_code, role, created_at
-            FROM buciukai.users
-            WHERE firebase_uid = #{firebaseUid}
-            """)
-    Optional<User> getUserByFirebaseUid(String firebaseUid);
+        @Select("""
+                        SELECT id, firebase_uid, username, name, surname, email, phone_number, birthdate, city, postal_code, role, created_at
+                        FROM buciukai.users
+                        WHERE firebase_uid = #{firebaseUid}
+                        """)
+        Optional<User> getUserByFirebaseUid(String firebaseUid);
 
-    @Update(
-            """
-            UPDATE buciukai.users
-            SET username=#{user.username}, name=#{user.name}, surname=#{user.surname}, email=#{user.email}, phone_number=#{user.phoneNumber}, birthdate=#{user.birthdate}, city=#{user.city}, postal_code=#{user.postalCode}
-            WHERE firebase_uid = #{firebaseUid}
-            """
-    )
-    void updateUser(String firebaseUid, UserInfoDto user);
+        @Update("""
+                        UPDATE buciukai.users
+                        SET username=#{user.username}, name=#{user.name}, surname=#{user.surname}, email=#{user.email}, phone_number=#{user.phoneNumber}, birthdate=#{user.birthdate}, city=#{user.city}, postal_code=#{user.postalCode}
+                        WHERE firebase_uid = #{firebaseUid}
+                        """)
+        void updateUser(String firebaseUid, UserInfoDto user);
 
-    @Delete(
-            """
-            DELETE FROM buciukai.users
-            WHERE firebase_uid = #{firebaseUid}
-            """
-    )
-    void deleteUser(String firebaseUid);
+        @Delete("""
+                        DELETE FROM buciukai.users
+                        WHERE firebase_uid = #{firebaseUid}
+                        """)
+        void deleteUser(String firebaseUid);
 }
