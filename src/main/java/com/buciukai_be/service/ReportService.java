@@ -6,6 +6,7 @@ import com.buciukai_be.api.dto.DailyOccupancyReportDto;
 import com.buciukai_be.api.dto.HotelRevenueReportDto;
 import com.buciukai_be.api.dto.MonthlyDataDto;
 import com.buciukai_be.api.dto.OccupiedRoomDto;
+import com.buciukai_be.api.dto.ReportListDto;
 import com.buciukai_be.api.dto.RoomAvailabilityDto;
 import com.buciukai_be.api.dto.RoomStatusReportDto;
 import com.buciukai_be.repository.ReportRepository;
@@ -222,5 +223,14 @@ public class ReportService {
                 .averageOccupancy(averageOccupancy)
                 .monthlyData(monthlyDataList)
                 .build();
+    }
+
+    public Integer saveHotelRevenueReport(String reportName, LocalDate startDate,
+            LocalDate endDate, String adminId) {
+        return reportRepository.saveReport(reportName, startDate, endDate, adminId);
+    }
+
+    public List<ReportListDto> getAllReports() {
+        return reportRepository.getAllReports();
     }
 }

@@ -2,7 +2,10 @@ package com.buciukai_be.repository;
 
 import com.buciukai_be.api.dto.ClientReservationDto;
 import com.buciukai_be.api.dto.OccupiedRoomDto;
+import com.buciukai_be.api.dto.ReportListDto;
 import com.buciukai_be.api.dto.RoomAvailabilityDto;
+
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -213,4 +216,30 @@ public interface ReportRepository {
                         @Param("startDate") LocalDate startDate,
                         @Param("endDate") LocalDate endDate,
                         @Param("totalRooms") Integer totalRooms);
+
+        @Insert("""
+                        INSERT INTO buciukai.report (generation_date, period_start, period_end, admin_id, report_name)
+                        VALUES (CURRENT_DATE, #{startDate}, #{endDate}, #{adminId}::uuid, #{reportName})
+                        RETURNING id
+                        """)
+        Integer saveReport(
+                        @Param("reportName") String reportName,
+                        @Param("startDate") LocalDate startDate,
+                        @Param("endDate") LocalDate endDate,
+                        @Param("adminId") String adminId);
+
+        @Select("""
+                        SELECT
+                            r.id,
+                            r.report_name as reportName,
+                            r.generation_date as generationDate,
+                            r.period_start as periodStart,
+                            r.period_end as periodEnd,
+                            CONCAT(u.name, ' ', u.surname) as adminName
+                        FROM buciukai.report r
+                        INNER JOIN buciukai.admin a ON r.admin_id = a.user_id
+                        INNER JOIN buciukai.users u ON a.user_id = u.id
+                        ORDER BY r.generation_date DESC, r.id DESC
+                        """)
+        List<ReportListDto> getAllReports();
 }
