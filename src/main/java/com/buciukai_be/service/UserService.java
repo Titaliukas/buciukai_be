@@ -3,6 +3,7 @@ package com.buciukai_be.service;
 import com.buciukai_be.api.dto.UserInfoDto;
 import com.buciukai_be.model.User;
 import com.buciukai_be.model.UserRole;
+import com.buciukai_be.repository.ClientRepository;
 import com.buciukai_be.repository.UserRepository;
 import com.buciukai_be.api.dto.UserSignUpDto;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
 
     public User createUser(UserSignUpDto dto) {
         // Check if user already exists
@@ -37,22 +39,11 @@ public class UserService {
         // Save user
         userRepository.createUser(user);
 
-        // Handle STAFF / CLIENT extra tables
-        // switch (user.getRole()) {
-        // case STAFF -> {
-        // Staff staff = new Staff();
-        // staff.setUser(user);
-        // staff.setPosition("Unknown"); // default
-        // staff.setSalary(BigDecimal.ZERO);
-        // // save via staff repository
-        // }
-        // case CLIENT -> {
-        // Client client = new Client();
-        // client.setUser(user);
-        // client.setTotalReservations(0);
-        // // save via client repository
-        // }
-        // }
+        if(user.getRole() == UserRole.CLIENT){
+            Optional<User> new_user = userRepository.getUserByFirebaseUid(user.getFirebaseUid());
+
+            new_user.ifPresent(value -> clientRepository.createClient(value.getId()));
+        }
 
         return user;
     }
