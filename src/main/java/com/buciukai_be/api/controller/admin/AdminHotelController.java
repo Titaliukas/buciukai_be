@@ -31,5 +31,18 @@ public class AdminHotelController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
+
+    @GetMapping
+public ResponseEntity<List<Hotel>> getHotels(
+        HttpServletRequest request
+) {
+    FirebaseToken firebaseUser =
+            (FirebaseToken) request.getAttribute("firebaseUser");
+
+    return ResponseEntity.ok(
+            adminHotelService.getHotels(firebaseUser)
+    );
+}
+
 }
 

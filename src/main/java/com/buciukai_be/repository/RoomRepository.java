@@ -13,10 +13,31 @@ public interface RoomRepository {
 
     @Insert("""
         INSERT INTO buciukai.room
-        (hotel_id, room_number, price, room_type, floor, size, bed_type, description, is_available)
+        (
+            hotel_id,
+            room_number,
+            price,
+            floor_number,
+            is_available,
+            description,
+            size_m2,
+            room_type_id,
+            bed_type_id
+        )
         VALUES
-        (#{hotelId}, #{roomNumber}, #{price}, #{roomType}, #{floor}, #{size}, #{bedType}, #{description}, #{isAvailable})
+        (
+            #{hotelId},
+            #{roomNumber},
+            #{price},
+            #{floorNumber},
+            #{isAvailable},
+            #{description},
+            #{sizeM2},
+            #{roomTypeId},
+            #{bedTypeId}
+        )
     """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void createRoom(Room room);
 }
+

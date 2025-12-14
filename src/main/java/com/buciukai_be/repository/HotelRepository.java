@@ -59,4 +59,11 @@ public interface HotelRepository {
     """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void createHotel(Hotel hotel);
+
+    @Select("""
+    SELECT id, name
+    FROM buciukai.hotel
+""")
+List<Hotel> findAll();
+
 }

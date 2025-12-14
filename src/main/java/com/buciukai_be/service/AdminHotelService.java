@@ -38,4 +38,19 @@ public class AdminHotelService {
     return hotel;
 }
 
+public List<Hotel> getHotels(FirebaseToken token) {
+    User user = userRepository
+            .getUserByFirebaseUid(token.getUid())
+            .orElseThrow(() ->
+                    new ResponseStatusException(HttpStatus.UNAUTHORIZED)
+            );
+
+    if (user.getRole() != UserRole.ADMIN) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    return hotelRepository.findAll();
+}
+
+
 }

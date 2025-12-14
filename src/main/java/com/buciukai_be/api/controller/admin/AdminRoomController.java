@@ -19,20 +19,17 @@ public class AdminRoomController {
 
     private final AdminRoomService adminRoomService;
 
-    @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<Room> createRoom(
-            HttpServletRequest request,
-            @ModelAttribute Room room,
-            @RequestPart(required = false) List<MultipartFile> pictures
-    ) {
-        FirebaseToken firebaseUser =
-                (FirebaseToken) request.getAttribute("firebaseUser");
+    @PostMapping
+public ResponseEntity<Room> createRoom(
+        HttpServletRequest request,
+        @RequestBody Room room
+) {
+    FirebaseToken token =
+            (FirebaseToken) request.getAttribute("firebaseUser");
 
-        Room created =
-                adminRoomService.createRoom(firebaseUser, room);
+    room.setIsAvailable(true);
+    Room created = adminRoomService.createRoom(token, room);
+    return ResponseEntity.status(HttpStatus.CREATED).body(created);
+}
 
-        // pictures → later (filesystem / cloud)
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
 }
