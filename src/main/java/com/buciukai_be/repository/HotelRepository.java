@@ -1,12 +1,15 @@
 package com.buciukai_be.repository;
 
-import com.buciukai_be.model.Hotel;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import com.buciukai_be.model.Hotel;
 
 @Mapper
 @Repository
@@ -47,4 +50,13 @@ public interface HotelRepository {
             WHERE id = #{id}
             """)
     Optional<Hotel> getHotelById(Integer id);
+
+    @Insert("""
+        INSERT INTO buciukai.hotel
+        (name, address, city, country, postal_code, phone_number, email, star_rating, description, total_rooms)
+        VALUES
+        (#{name}, #{address}, #{city}, #{country}, #{postalCode}, #{phoneNumber}, #{email}, #{starRating}, #{description}, #{totalRooms})
+    """)
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void createHotel(Hotel hotel);
 }
