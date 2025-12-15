@@ -32,4 +32,14 @@ public interface ExclusionRepository {
         DELETE FROM buciukai.exclusion WHERE room_id = #{roomId}
     """)
     void deleteByRoomId(@Param("roomId") Integer roomId);
+    
+    @Delete("""
+        DELETE FROM buciukai.exclusion
+        WHERE room_id = #{roomId}
+          AND start_date = #{startDate}
+          AND end_date = #{endDate}
+    """)
+    void deleteByRoomIdAndRange(@Param("roomId") Integer roomId,
+                                @Param("startDate") java.time.LocalDate startDate,
+                                @Param("endDate") java.time.LocalDate endDate);
 }

@@ -27,6 +27,13 @@ public interface ReservationRepository {
     @Select("""
         SELECT id, check_in AS checkIn, check_out AS checkOut, status, client_id AS clientId, room_id AS roomId
         FROM buciukai.reservation
+        WHERE id = #{id}
+    """)
+    Reservation findById(@Param("id") Integer id);
+
+    @Select("""
+        SELECT id, check_in AS checkIn, check_out AS checkOut, status, client_id AS clientId, room_id AS roomId
+        FROM buciukai.reservation
         WHERE client_id = #{clientId}::uuid
         ORDER BY check_in DESC
     """)
