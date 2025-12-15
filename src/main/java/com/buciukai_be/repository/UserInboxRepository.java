@@ -13,40 +13,44 @@ import java.util.UUID;
 public interface UserInboxRepository {
 
     @Insert("""
-        INSERT INTO buciukai.user_inbox (user_id, announcement_id, is_read)
-        VALUES (#{userId}, #{announcementId}, #{isRead})
+        INSERT INTO buciukai.user_inbox
+        (user_id, announcement_id)
+        VALUES
+        (#{userId}, #{announcementId})
     """)
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void createInboxRow(UserInbox row);
-
-    @Select("""
+    void insert(
+        @Param("userId") UUID userId,
+        @Param("announcementId") Integer announcementId
+    );
+     @Select("""
         SELECT
-            ui.id AS inboxId,
-            a.id AS announcementId,
-            a.title,
-            a.message,
-            a.visible_until AS visibleUntil,
-            ui.is_read AS isRead,
-            ui.received_at AS receivedAt,
-            a.admin_id AS adminId
-        FROM buciukai.user_inbox ui
-        JOIN buciukai.announcement a ON a.id = ui.announcement_id
+            ui.id            AS inboxId,
+            a.title          AS title,
+            a.message        AS message,
+            ui.is_read       AS isRead,
+            ui.received_at   AS receivedAt
+        FROM user_inbox ui
+        JOIN announcement a ON a.id = ui.announcement_id
         WHERE ui.user_id = #{userId}
-          AND a.visible_until >= CURRENT_DATE
         ORDER BY ui.received_at DESC
     """)
     List<InboxMessageDto> listInbox(UUID userId);
 
     @Update("""
-        UPDATE buciukai.user_inbox
+        UPDATE user_inbox
         SET is_read = TRUE
-        WHERE id = #{inboxId} AND user_id = #{userId}
+        WHERE id = #{inboxId}
+          AND user_id = #{userId}
     """)
-    void markRead(int inboxId, UUID userId);
+    int markRead(@Param("inboxId") int inboxId,
+                 @Param("userId") UUID userId);
 
     @Delete("""
-        DELETE FROM buciukai.user_inbox
-        WHERE id = #{inboxId} AND user_id = #{userId}
+        DELETE FROM user_inbox
+        WHERE id = #{inboxId}
+          AND user_id = #{userId}
     """)
-    void deleteInbox(int inboxId, UUID userId);
+    int deleteInbox(@Param("inboxId") int inboxId,
+                    @Param("userId") UUID userId);
 }
+

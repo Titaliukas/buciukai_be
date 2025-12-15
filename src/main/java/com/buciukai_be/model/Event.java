@@ -1,21 +1,16 @@
 package com.buciukai_be.model;
 
-import lombok.*;
-
-import java.time.OffsetDateTime;
+import lombok.Data;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Event {
-
-    private UUID id;
-    private UUID hotelId;
-
-    private OffsetDateTime startDate;
-    private OffsetDateTime endDate;
-
+    private Integer id;
+    private Integer hotelId;
+    private String title;
     private String description;
+    private LocalDateTime startAt;
+    private LocalDateTime endAt;
+    private UUID adminId;
 }

@@ -1,11 +1,8 @@
 package com.buciukai_be.repository;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.springframework.stereotype.Repository;
-
 import com.buciukai_be.model.Event;
+import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 @Mapper
 @Repository
@@ -13,10 +10,10 @@ public interface EventRepository {
 
     @Insert("""
         INSERT INTO buciukai.event
-        (hotel_id, start_date, end_date, description)
+        (hotel_id, title, description, start_at, end_at, admin_id)
         VALUES
-        (#{hotelId}, #{startDate}, #{endDate}, #{description})
+        (#{hotelId}, #{title}, #{description}, #{startAt}, #{endAt}, #{adminId})
     """)
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void createEvent(Event event);
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    void create(Event event);
 }

@@ -12,21 +12,11 @@ import java.util.List;
 public interface AnnouncementRepository {
 
     @Insert("""
-        INSERT INTO buciukai.announcement (title, message, visible_until, admin_id)
-        VALUES (#{title}, #{message}, #{visibleUntil}, #{adminId})
+        INSERT INTO buciukai.announcement
+        (title, message, visible_until, type, admin_id)
+        VALUES
+        (#{title}, #{message}, #{visibleUntil}, #{type}, #{adminId})
+        RETURNING id
     """)
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void createAnnouncement(Announcement a);
-
-    @Select("""
-        SELECT a.id, a.title, a.message, a.visible_until, a.admin_id
-        FROM buciukai.announcement a
-        WHERE a.visible_until >= #{today}
-          AND NOT EXISTS (
-              SELECT 1 FROM buciukai.user_inbox ui
-              WHERE ui.announcement_id = a.id
-          )
-        ORDER BY a.id DESC
-    """)
-    List<Announcement> listNews(LocalDate today);
+    Integer create(Announcement announcement);
 }

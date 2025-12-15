@@ -1,6 +1,7 @@
 package com.buciukai_be.service;
 
-import com.buciukai_be.api.dto.admin.CreateAnnouncementDto;
+import com.buciukai_be.api.dto.admin.CreateAnnouncementRequest;
+import com.buciukai_be.model.AnnouncementType;
 import com.buciukai_be.model.Announcement;
 import com.buciukai_be.model.User;
 import com.buciukai_be.model.UserInbox;
@@ -25,38 +26,33 @@ public class AdminAnnouncementService {
     private final UserInboxRepository userInboxRepository;
     private final UserRepository userRepository;
 
-    private User assertAdmin(FirebaseToken token) {
-        User u = userRepository.getUserByFirebaseUid(token.getUid())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not registered"));
-        if (u.getRole() != UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ADMIN role required");
+    public void create(
+        FirebaseToken token,
+        CreateAnnouncementRequest req
+    ) {
+        User admin = userRepository
+            .getUserByFirebaseUid(token.getUid())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+        if (admin.getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        return u;
-    }
 
-    public Announcement create(FirebaseToken token, CreateAnnouncementDto dto) {
-        User admin = assertAdmin(token);
+        Announcement announcement = Announcement.builder()
+            .title(req.getTitle())
+            .message(req.getMessage())
+            .visibleUntil(req.getVisibleUntil())
+            .type(req.getType())
+            .adminId(admin.getId())
+            .build();
 
-        Announcement a = Announcement.builder()
-                .title(dto.getTitle())
-                .message(dto.getMessage())
-                .visibleUntil(dto.getVisibleUntil())
-                .adminId(admin.getId())
-                .build();
+        Integer announcementId = announcementRepository.create(announcement);
 
-        announcementRepository.createAnnouncement(a);
-
-        List<UUID> recipients = dto.getRecipientUserIds();
-        if (recipients != null && !recipients.isEmpty()) {
-            for (UUID userId : recipients) {
-                UserInbox row = UserInbox.builder()
-                        .userId(userId)
-                        .announcementId(a.getId())
-                        .isRead(false)
-                        .build();
-                userInboxRepository.createInboxRow(row);
+        if (req.getType() == AnnouncementType.INBOX) {
+            for (UUID userId : req.getRecipients()) {
+                userInboxRepository.insert(userId, announcementId);
             }
         }
-        return a;
     }
 }
+

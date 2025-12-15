@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/admin")
+@RequestMapping("/admin")
 public class AdminRoomMetaController {
 
     private final BedTypeRepository bedTypeRepository;
