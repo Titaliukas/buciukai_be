@@ -1,22 +1,32 @@
 package com.buciukai_be.repository;
 
-import com.buciukai_be.model.Announcement;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.buciukai_be.model.Announcement;
 
 @Mapper
 @Repository
 public interface AnnouncementRepository {
 
     @Insert("""
-        INSERT INTO buciukai.announcement
-        (title, message, visible_until, type, admin_id)
-        VALUES
-        (#{title}, #{message}, #{visibleUntil}, #{type}, #{adminId})
-        RETURNING id
+        INSERT INTO announcement (
+            title,
+            message,
+            visible_until,
+            admin_id,
+            type
+        )
+        VALUES (
+            #{title},
+            #{message},
+            #{visibleUntil},
+            #{adminId},
+            #{type}
+        )
     """)
-    Integer create(Announcement announcement);
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    void create(Announcement announcement);
 }

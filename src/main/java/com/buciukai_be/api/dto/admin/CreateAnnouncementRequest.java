@@ -1,11 +1,13 @@
 package com.buciukai_be.api.dto.admin;
 
-import com.buciukai_be.model.AnnouncementType;
-import lombok.Data;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import com.buciukai_be.model.AnnouncementType;
+
+import lombok.Data;
 
 @Data
 public class CreateAnnouncementRequest {
@@ -13,6 +15,6 @@ public class CreateAnnouncementRequest {
     private String message;
     private LocalDate visibleUntil;
     private AnnouncementType type;     
-    private List<UUID> recipients;      
+    private List<UUID> recipients = new ArrayList<>();      
 }
 
