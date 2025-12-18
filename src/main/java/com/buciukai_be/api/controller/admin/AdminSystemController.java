@@ -1,5 +1,6 @@
 package com.buciukai_be.api.controller.admin;
 
+import com.buciukai_be.api.dto.admin.SystemSettingsDto;
 import com.buciukai_be.service.AdminSystemService;
 import com.google.firebase.auth.FirebaseToken;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,14 +15,18 @@ public class AdminSystemController {
 
     private final AdminSystemService adminSystemService;
 
+    @GetMapping
+    public ResponseEntity<SystemSettingsDto> getSettings(HttpServletRequest request) {
+        FirebaseToken token = (FirebaseToken) request.getAttribute("firebaseUser");
+        return ResponseEntity.ok(adminSystemService.getSettings(token));
+    }
+
     @PatchMapping("/registration")
     public ResponseEntity<Void> toggleRegistration(
             HttpServletRequest request,
             @RequestParam boolean enabled
     ) {
-        FirebaseToken token =
-                (FirebaseToken) request.getAttribute("firebaseUser");
-
+        FirebaseToken token = (FirebaseToken) request.getAttribute("firebaseUser");
         adminSystemService.setRegistrationEnabled(token, enabled);
         return ResponseEntity.ok().build();
     }
@@ -31,18 +36,14 @@ public class AdminSystemController {
             HttpServletRequest request,
             @RequestParam boolean active
     ) {
-        FirebaseToken token =
-                (FirebaseToken) request.getAttribute("firebaseUser");
-
+        FirebaseToken token = (FirebaseToken) request.getAttribute("firebaseUser");
         adminSystemService.setSystemActive(token, active);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/backup")
     public ResponseEntity<Void> backup(HttpServletRequest request) {
-        FirebaseToken token =
-                (FirebaseToken) request.getAttribute("firebaseUser");
-
+        FirebaseToken token = (FirebaseToken) request.getAttribute("firebaseUser");
         adminSystemService.createBackup(token);
         return ResponseEntity.ok().build();
     }

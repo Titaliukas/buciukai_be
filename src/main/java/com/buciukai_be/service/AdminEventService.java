@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class AdminEventService {
@@ -18,25 +20,24 @@ public class AdminEventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
 
-    public Event createEvent(FirebaseToken firebaseUser, Event event) {
-
+    private User assertAdmin(FirebaseToken token) {
         User user = userRepository
-                .getUserByFirebaseUid(firebaseUser.getUid())
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.UNAUTHORIZED,
-                                "User not registered in system"
-                        )
-                );
+                .getUserByFirebaseUid(token.getUid())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         if (user.getRole() != UserRole.ADMIN) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "ADMIN role required"
-            );
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+        return user;
+    }
 
-        eventRepository.createEvent(event);
-        return event;
+    public void createEvent(FirebaseToken token, Event event) {
+        User admin = assertAdmin(token);
+        event.setAdminId(admin.getId());
+        eventRepository.create(event);
+    }
+
+    public List<Event> getHotelEvents(Integer hotelId) {
+        return eventRepository.findByHotelId(hotelId);
     }
 }

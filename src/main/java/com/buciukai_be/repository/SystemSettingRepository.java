@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import com.buciukai_be.model.SystemSetting;
 
+import java.util.List;
+
 @Mapper
 @Repository
 public interface SystemSettingRepository {
@@ -17,6 +19,13 @@ public interface SystemSettingRepository {
         WHERE name = #{name}
     """)
     SystemSetting findByName(String name);
+
+    @Select("""
+        SELECT id, name, is_active, description
+        FROM buciukai.system_setting
+        ORDER BY name
+    """)
+    List<SystemSetting> findAll();
 
     @Update("""
         UPDATE buciukai.system_setting

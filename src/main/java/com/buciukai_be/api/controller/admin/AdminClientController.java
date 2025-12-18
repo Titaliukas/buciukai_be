@@ -3,14 +3,18 @@ package com.buciukai_be.api.controller.admin;
 import com.buciukai_be.api.dto.admin.AdminUserDto;
 import com.buciukai_be.api.dto.admin.AdminUserEmailDto;
 import com.buciukai_be.api.dto.admin.AdminUserPasswordDto;
+import com.buciukai_be.model.UserRole;
 import com.buciukai_be.service.AdminClientService;
 import com.google.firebase.auth.FirebaseToken;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -77,8 +81,38 @@ public ResponseEntity<Void> changePassword(
             (FirebaseToken) request.getAttribute("firebaseUser");
 
     return ResponseEntity.ok(
-            adminClientService.getAllClients(token)
+            adminClientService.getAllUsersNoAdmin(token)
     );
 }
+
+
+        @PatchMapping("/admin/users/{userId}/role")
+public ResponseEntity<Void> updateRole(
+        HttpServletRequest request,
+        @PathVariable UUID userId,
+        @RequestBody Map<String, Integer> body
+) {
+    FirebaseToken token =
+            (FirebaseToken) request.getAttribute("firebaseUser");
+
+    if (token == null) {
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
+
+    Integer roleCode = body.get("role");
+    if (roleCode == null) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Missing role"
+        );
+    }
+
+    UserRole role = UserRole.fromCode(roleCode);
+
+    adminClientService.updateRole(token, userId, role);
+
+    return ResponseEntity.ok().build();
+}
+
 
 }

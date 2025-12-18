@@ -1,16 +1,14 @@
 package com.buciukai_be.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SystemSetting {
+public class RoomType {
 
     private Integer id;
-
     private String name;
-    private boolean isActive;
-    private String description;
 }

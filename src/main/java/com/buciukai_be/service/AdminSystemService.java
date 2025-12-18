@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import com.buciukai_be.api.dto.admin.SystemSettingsDto;
 
 @Service
 @AllArgsConstructor
@@ -53,4 +54,20 @@ public class AdminSystemService {
         // intentionally empty or logged
         // backup trigger can be simulated
     }
+
+    public SystemSettingsDto getSettings(FirebaseToken token) {
+    assertAdmin(token);
+
+    var system = systemSettingRepository.findByName(SystemSettingNames.SYSTEM_ACTIVE);
+    var reg = systemSettingRepository.findByName(SystemSettingNames.REGISTRATION_ENABLED);
+
+    if (system == null || reg == null) {
+        throw new ResponseStatusException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "System settings rows missing in DB"
+        );
+    }
+
+    return new SystemSettingsDto(system.isActive(), reg.isActive());
+}
 }

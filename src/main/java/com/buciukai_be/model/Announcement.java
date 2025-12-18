@@ -14,5 +14,6 @@ public class Announcement {
     private String title;
     private String message;
     private LocalDate visibleUntil;
+    private AnnouncementType type;
     private UUID adminId;
 }

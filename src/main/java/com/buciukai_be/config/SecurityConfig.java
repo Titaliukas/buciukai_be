@@ -29,7 +29,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/signup").authenticated() // secure signup
+                        .requestMatchers("/api/users/signup").authenticated()
+                        .requestMatchers("/api/admin/**").authenticated() // secure signup
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

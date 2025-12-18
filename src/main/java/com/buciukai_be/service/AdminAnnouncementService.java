@@ -1,21 +1,22 @@
 package com.buciukai_be.service;
 
-import com.buciukai_be.api.dto.admin.CreateAnnouncementDto;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.buciukai_be.api.dto.admin.CreateAnnouncementRequest;
 import com.buciukai_be.model.Announcement;
+import com.buciukai_be.model.AnnouncementType;
 import com.buciukai_be.model.User;
-import com.buciukai_be.model.UserInbox;
 import com.buciukai_be.model.UserRole;
 import com.buciukai_be.repository.AnnouncementRepository;
 import com.buciukai_be.repository.UserInboxRepository;
 import com.buciukai_be.repository.UserRepository;
 import com.google.firebase.auth.FirebaseToken;
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
@@ -25,38 +26,40 @@ public class AdminAnnouncementService {
     private final UserInboxRepository userInboxRepository;
     private final UserRepository userRepository;
 
-    private User assertAdmin(FirebaseToken token) {
-        User u = userRepository.getUserByFirebaseUid(token.getUid())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not registered"));
-        if (u.getRole() != UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ADMIN role required");
-        }
-        return u;
+    public void create(FirebaseToken token, CreateAnnouncementRequest req) {
+
+    User admin = userRepository
+        .getUserByFirebaseUid(token.getUid())
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+    if (admin.getRole() != UserRole.ADMIN) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 
-    public Announcement create(FirebaseToken token, CreateAnnouncementDto dto) {
-        User admin = assertAdmin(token);
+    Announcement announcement = Announcement.builder()
+        .title(req.getTitle())
+        .message(req.getMessage())
+        .visibleUntil(req.getVisibleUntil())
+        .type(req.getType())
+        .adminId(admin.getId())
+        .build();
 
-        Announcement a = Announcement.builder()
-                .title(dto.getTitle())
-                .message(dto.getMessage())
-                .visibleUntil(dto.getVisibleUntil())
-                .adminId(admin.getId())
-                .build();
+    announcementRepository.create(announcement);
 
-        announcementRepository.createAnnouncement(a);
+    Integer announcementId = announcement.getId();
 
-        List<UUID> recipients = dto.getRecipientUserIds();
-        if (recipients != null && !recipients.isEmpty()) {
-            for (UUID userId : recipients) {
-                UserInbox row = UserInbox.builder()
-                        .userId(userId)
-                        .announcementId(a.getId())
-                        .isRead(false)
-                        .build();
-                userInboxRepository.createInboxRow(row);
-            }
-        }
-        return a;
+    if (announcementId == null) {
+        throw new ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Announcement ID was not generated"
+        );
     }
+
+    if (req.getType() == AnnouncementType.INBOX) {
+        for (UUID userId : req.getRecipients()) {
+            userInboxRepository.insert(userId, announcementId);
+        }
+    }
+}
+
 }
