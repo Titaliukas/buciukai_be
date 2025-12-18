@@ -5,18 +5,15 @@ import lombok.Data;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import com.buciukai_be.model.UserRole;
-
 @Data
-public class AdminUserDto {
+public class AdminUserRawDto {
     private UUID id;
-    private String firebaseUid;
     private String name;
     private String surname;
     private String email;
     private String city;
     private OffsetDateTime birthdate;
     private boolean isBlocked;
-
-    private UserRole role;
+    private int role;
 }
+

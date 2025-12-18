@@ -22,17 +22,45 @@ public class AdminClientService {
 
     private final UserRepository userRepository;
 
+    /* =========================
+       Security
+       ========================= */
     private void assertAdmin(FirebaseToken token) {
         User admin = userRepository
                 .getUserByFirebaseUid(token.getUid())
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         if (admin.getRole() != UserRole.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 
+    /* =========================
+       User listing
+       ========================= */
+    public List<AdminUserDto> getAllUsersNoAdmin(FirebaseToken token) {
+    assertAdmin(token);
+
+    return userRepository.getAllUsersNoAdmin().stream()
+        .map(u -> {
+            AdminUserDto dto = new AdminUserDto();
+            dto.setId(u.getId());
+            dto.setName(u.getName());
+            dto.setSurname(u.getSurname());
+            dto.setEmail(u.getEmail());
+            dto.setCity(u.getCity());
+            dto.setBirthdate(u.getBirthdate());
+            dto.setBlocked(u.isBlocked());
+            dto.setRole(UserRole.fromCode(u.getRole()));
+            return dto;
+        })
+        .toList();
+}
+
+
+    /* =========================
+       Blocking
+       ========================= */
     public void blockUser(FirebaseToken token, UUID userId) {
         assertAdmin(token);
         userRepository.blockUser(userId);
@@ -43,82 +71,58 @@ public class AdminClientService {
         userRepository.unblockUser(userId);
     }
 
+    /* =========================
+       Email change
+       ========================= */
     public void changeEmail(FirebaseToken token, UUID userId, String newEmail) {
-    assertAdmin(token);
-
-    User user = userRepository.getUserById(userId)
-            .orElseThrow(() ->
-                    new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-            );
-
-    // Check if email already exists in Firebase
-    try {
-        FirebaseAuth.getInstance().getUserByEmail(newEmail);
-        throw new ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "Email already in use"
-        );
-    } catch (FirebaseAuthException ignored) {
-        // email is free
-    }
-
-    try {
-        FirebaseAuth.getInstance().updateUser(
-                new UserRecord.UpdateRequest(user.getFirebaseUid())
-                        .setEmail(newEmail)
-        );
-
-        userRepository.updateEmail(userId, newEmail);
-
-    } catch (FirebaseAuthException e) {
-        throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Failed to update email"
-        );
-    }
-}
-
-
-    public void changePasswordByUserId(
-        FirebaseToken token,
-        UUID userId,
-        String newPassword
-) {
-    assertAdmin(token);
-
-    User user = userRepository.getUserById(userId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-    try {
-        FirebaseAuth.getInstance().updateUser(
-                new UserRecord.UpdateRequest(user.getFirebaseUid())
-                        .setPassword(newPassword)
-        );
-    } catch (FirebaseAuthException e) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-    }
-}
-
-    public List<AdminUserDto> getAllClients(FirebaseToken token) {
-    assertAdmin(token);
-    return userRepository.getAllClients();
-    }
-
-    public void changePassword(FirebaseToken token, String firebaseUid, String newPassword) {
         assertAdmin(token);
 
+        User user = userRepository.getUserById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         try {
-            UserRecord.UpdateRequest request =
-                    new UserRecord.UpdateRequest(firebaseUid)
-                            .setPassword(newPassword);
+            FirebaseAuth.getInstance().getUserByEmail(newEmail);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
+        } catch (FirebaseAuthException ignored) {}
 
-            FirebaseAuth.getInstance().updateUser(request);
-
-        } catch (FirebaseAuthException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Failed to update password"
+        try {
+            FirebaseAuth.getInstance().updateUser(
+                    new UserRecord.UpdateRequest(user.getFirebaseUid())
+                            .setEmail(newEmail)
             );
+            userRepository.updateEmail(userId, newEmail);
+        } catch (FirebaseAuthException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update email");
         }
     }
+
+    /* =========================
+       Password change
+       ========================= */
+    public void changePasswordByUserId(
+            FirebaseToken token,
+            UUID userId,
+            String newPassword
+    ) {
+        assertAdmin(token);
+
+        User user = userRepository.getUserById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        try {
+            FirebaseAuth.getInstance().updateUser(
+                    new UserRecord.UpdateRequest(user.getFirebaseUid())
+                            .setPassword(newPassword)
+            );
+        } catch (FirebaseAuthException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public void updateRole(FirebaseToken token, UUID userId, UserRole role) {
+    assertAdmin(token);
+    userRepository.updateRole(userId, role.getCode());
+}
+
+
 }

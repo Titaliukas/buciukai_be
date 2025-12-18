@@ -1,6 +1,7 @@
 package com.buciukai_be.repository;
 
 import com.buciukai_be.api.dto.admin.AdminUserDto;
+import com.buciukai_be.api.dto.admin.AdminUserRawDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -53,4 +54,20 @@ public interface AdminUserRepository {
         @Param("userId") UUID userId,
         @Param("email") String email
     );
+
+    @Select("""
+    SELECT 
+        id,
+        name,
+        surname,
+        email,
+        city,
+        birthdate,
+        role,
+        is_blocked AS isBlocked
+    FROM buciukai.users
+    ORDER BY created_at DESC
+""")
+List<AdminUserRawDto> getAllUsers();
+
 }

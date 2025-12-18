@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/admin/events")
@@ -26,4 +28,9 @@ public class AdminEventController {
 
         adminEventService.createEvent(token, event);
     }
+
+    @GetMapping("/hotel/{hotelId}")
+    public List<Event> getHotelEvents(@PathVariable Integer hotelId) {
+        return adminEventService.getHotelEvents(hotelId);
+}
 }

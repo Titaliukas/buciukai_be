@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class AdminEventService {
@@ -33,5 +35,9 @@ public class AdminEventService {
         User admin = assertAdmin(token);
         event.setAdminId(admin.getId());
         eventRepository.create(event);
+    }
+
+    public List<Event> getHotelEvents(Integer hotelId) {
+        return eventRepository.findByHotelId(hotelId);
     }
 }

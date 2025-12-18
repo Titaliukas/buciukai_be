@@ -8,12 +8,14 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import com.buciukai_be.api.dto.UserInfoDto;
 import com.buciukai_be.api.dto.admin.AdminUserDto;
+import com.buciukai_be.api.dto.admin.AdminUserRawDto;
 import com.buciukai_be.model.User;
 
 @Mapper
@@ -103,4 +105,47 @@ List<AdminUserDto> getAllClients();
     WHERE id = #{userId}
 """)
 Optional<User> getUserById(UUID userId);
+
+@Select("""
+    SELECT 
+        id,
+        name,
+        surname,
+        email,
+        city,
+        birthdate,
+        role,
+        (status_id = 2) AS isBlocked
+    FROM buciukai.users
+    ORDER BY created_at DESC
+""")
+List<AdminUserRawDto> getAllUsers();
+
+@Select("""
+    SELECT 
+        id,
+        name,
+        surname,
+        email,
+        city,
+        birthdate,
+        role,
+        (status_id = 2) AS isBlocked
+    FROM buciukai.users
+    WHERE role IN (1, 2)   -- CLIENT + STAFF ONLY
+    ORDER BY created_at DESC
+""")
+List<AdminUserRawDto> getAllUsersNoAdmin();
+
+
+@Update("""
+    UPDATE buciukai.users
+    SET role = #{role}
+    WHERE id = #{userId}
+""")
+void updateRole(
+    @Param("userId") UUID userId,
+    @Param("role") int role
+);
+
 }
