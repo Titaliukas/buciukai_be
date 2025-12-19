@@ -1,21 +1,29 @@
 package com.buciukai_be.api.controller.admin;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.buciukai_be.api.dto.admin.AdminUserDto;
 import com.buciukai_be.api.dto.admin.AdminUserEmailDto;
 import com.buciukai_be.api.dto.admin.AdminUserPasswordDto;
 import com.buciukai_be.model.UserRole;
 import com.buciukai_be.service.AdminClientService;
 import com.google.firebase.auth.FirebaseToken;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -86,7 +94,7 @@ public ResponseEntity<Void> changePassword(
 }
 
 
-        @PatchMapping("/admin/users/{userId}/role")
+        @PatchMapping("/{userId}/role")
 public ResponseEntity<Void> updateRole(
         HttpServletRequest request,
         @PathVariable UUID userId,

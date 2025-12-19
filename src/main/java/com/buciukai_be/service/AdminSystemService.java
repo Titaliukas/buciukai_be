@@ -1,12 +1,15 @@
 package com.buciukai_be.service;
 
 import com.buciukai_be.config.SystemSettingNames;
+import com.buciukai_be.model.SystemSetting;
 import com.buciukai_be.model.User;
 import com.buciukai_be.model.UserRole;
 import com.buciukai_be.repository.SystemSettingRepository;
 import com.buciukai_be.repository.UserRepository;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -70,4 +73,13 @@ public class AdminSystemService {
 
     return new SystemSettingsDto(system.isActive(), reg.isActive());
 }
+
+  
+
+    public boolean isEnabled(String name, boolean defaultValue) {
+        SystemSetting setting = systemSettingRepository.findByName(name);
+        return setting != null ? setting.isActive() : defaultValue;
+    }
+
+
 }
