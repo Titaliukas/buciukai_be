@@ -21,4 +21,5 @@ public class Hotel {
     private Integer starRating;
     private String description;
     private Integer totalRooms;
+    private Double lowestPrice;
 }
