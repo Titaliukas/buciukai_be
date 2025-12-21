@@ -30,11 +30,25 @@ public interface UserRepository {
         void createUser(User user);
 
         @Select("""
-                        SELECT id, firebase_uid, username, name, surname, email, phone_number, birthdate, city, postal_code, role, created_at
-                        FROM buciukai.users
-                        WHERE firebase_uid = #{firebaseUid}
-                        """)
-        Optional<User> getUserByFirebaseUid(String firebaseUid);
+    SELECT
+        id,
+        firebase_uid,
+        username,
+        name,
+        surname,
+        email,
+        phone_number,
+        birthdate,
+        city,
+        postal_code,
+        role,
+        status_id AS statusId,
+        created_at
+    FROM buciukai.users
+    WHERE firebase_uid = #{firebaseUid}
+""")
+Optional<User> getUserByFirebaseUid(String firebaseUid);
+
 
         @Update("""
                         UPDATE buciukai.users

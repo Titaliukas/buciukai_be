@@ -25,5 +25,6 @@ public class User {
     private String city;
     private String postalCode;
     private UserRole Role;
+    private Integer statusId;
     private OffsetDateTime createdAt;
 }
