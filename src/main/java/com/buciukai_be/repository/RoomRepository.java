@@ -1,5 +1,6 @@
 package com.buciukai_be.repository;
 
+import com.buciukai_be.api.dto.RoomDto;
 import com.buciukai_be.model.Room;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -46,37 +47,41 @@ public interface RoomRepository {
 
     @Select("""
         SELECT
-            id,
-            hotel_id     AS hotelId,
-            room_number  AS roomNumber,
-            price,
-            floor_number AS floorNumber,
-            is_available AS isAvailable,
-            description,
-            size_m2      AS sizeM2,
-            room_type_id AS roomTypeId,
-            bed_type_id  AS bedTypeId
-        FROM buciukai.room
-        WHERE hotel_id = #{hotelId}
-        ORDER BY room_number
+            r.id,
+            r.hotel_id     AS hotelId,
+            r.room_number  AS roomNumber,
+            r.price,
+            r.floor_number AS floorNumber,
+            r.is_available AS isAvailable,
+            r.description,
+            r.size_m2      AS sizeM2,
+            rt.name        AS roomType,
+            bt.name        AS bedType
+        FROM buciukai.room r
+        JOIN buciukai.room_type rt ON r.room_type_id = rt.id
+        JOIN buciukai.bed_type  bt ON r.bed_type_id  = bt.id
+        WHERE r.hotel_id = #{hotelId}
+        ORDER BY r.room_number
     """)
-    List<Room> findByHotelId(@Param("hotelId") Integer hotelId);
+    List<RoomDto> findByHotelId(@Param("hotelId") Integer hotelId);
 
     @Select("""
         SELECT
-            id,
-            hotel_id     AS hotelId,
-            room_number  AS roomNumber,
-            price,
-            floor_number AS floorNumber,
-            is_available AS isAvailable,
-            description,
-            size_m2      AS sizeM2,
-            room_type_id AS roomTypeId,
-            bed_type_id  AS bedTypeId
-        FROM buciukai.room
-        WHERE id = #{id}
+            r.id,
+            r.hotel_id     AS hotelId,
+            r.room_number  AS roomNumber,
+            r.price,
+            r.floor_number AS floorNumber,
+            r.is_available AS isAvailable,
+            r.description,
+            r.size_m2      AS sizeM2,
+            rt.name        AS roomType,
+            bt.name        AS bedType
+        FROM buciukai.room r
+        JOIN buciukai.room_type rt ON r.room_type_id = rt.id
+        JOIN buciukai.bed_type  bt ON r.bed_type_id  = bt.id
+        WHERE r.id = #{id}
     """)
-    Optional<Room> findById(@Param("id") Integer id);
+    Optional<RoomDto> findById(@Param("id") Integer id);
 }
 

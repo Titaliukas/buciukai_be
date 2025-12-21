@@ -17,37 +17,47 @@ public interface HotelRepository {
 
     @Select("""
             SELECT
-                id,
-                name,
-                address,
-                city,
-                country,
-                postal_code as postalCode,
-                phone_number as phoneNumber,
-                email,
-                star_rating as starRating,
-                description,
-                total_rooms as totalRooms
-            FROM buciukai.hotel
+                                h.id,
+                                h.name,
+                                h.address,
+                                h.city,
+                                h.country,
+                                h.postal_code as postalCode,
+                                h.phone_number as phoneNumber,
+                                h.email,
+                                h.star_rating as starRating,
+                                h.description,
+                                h.total_rooms as totalRooms,
+                                (
+                                    SELECT MIN(r.price)
+                                    FROM buciukai.room r
+                                    WHERE r.hotel_id = h.id
+                                ) AS lowestPrice
+                        FROM buciukai.hotel h
             ORDER BY name
             """)
     List<Hotel> getAllHotels();
 
     @Select("""
             SELECT
-                id,
-                name,
-                address,
-                city,
-                country,
-                postal_code as postalCode,
-                phone_number as phoneNumber,
-                email,
-                star_rating as starRating,
-                description,
-                total_rooms as totalRooms
-            FROM buciukai.hotel
-            WHERE id = #{id}
+                                h.id,
+                                h.name,
+                                h.address,
+                                h.city,
+                                h.country,
+                                h.postal_code as postalCode,
+                                h.phone_number as phoneNumber,
+                                h.email,
+                                h.star_rating as starRating,
+                                h.description,
+                                h.total_rooms as totalRooms,
+                                (
+                                    SELECT MIN(r.price)
+                                    FROM buciukai.room r
+                                    WHERE r.hotel_id = h.id
+                                ) AS lowestPrice
+                        FROM buciukai.hotel h
+                        WHERE h.id = #{id}
             """)
     Optional<Hotel> getHotelById(Integer id);
 
